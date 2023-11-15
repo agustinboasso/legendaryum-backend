@@ -7,14 +7,29 @@ import cors from 'cors';
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server);
+const io = new Server(server,{
+  cors: {
+    origin: "*",  
+    methods: ["GET", "POST"],
+    allowedHeaders: ["my-custom-header"],
+    credentials: true,
+  },
+});
 
 const metaverseService = new MetaverseService();
 metaverseService.startCoinGenerationTimer();
 
 const PORT = process.env.PORT || 3000;
 
+app.use(cors({
+  origin: '*',  
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+}));
+
+
 io.on('connection', (socket) => {
+  
   socket.on('joinRoom', (room) => {
     socket.join(room);
     const coins = metaverseService.getCoinsInRoom(room);
@@ -29,7 +44,7 @@ io.on('connection', (socket) => {
 });
 
 app.use('/api', apiRoutes(metaverseService));
-app.use(cors());
+
 
 server.listen(PORT, () => {
   console.log(`Servidor en ejecución en http://localhost:${PORT}`);
