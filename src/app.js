@@ -11,10 +11,22 @@ const apiRoutes_1 = require("./routes/apiRoutes");
 const cors_1 = __importDefault(require("cors"));
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
-const io = new socket_io_1.Server(server);
+const io = new socket_io_1.Server(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"],
+        allowedHeaders: ["my-custom-header"],
+        credentials: true,
+    },
+});
 const metaverseService = new service_1.MetaverseService();
 metaverseService.startCoinGenerationTimer();
 const PORT = process.env.PORT || 3000;
+app.use((0, cors_1.default)({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
+}));
 io.on('connection', (socket) => {
     socket.on('joinRoom', (room) => {
         socket.join(room);
@@ -28,7 +40,6 @@ io.on('connection', (socket) => {
     });
 });
 app.use('/api', (0, apiRoutes_1.apiRoutes)(metaverseService));
-app.use((0, cors_1.default)());
 server.listen(PORT, () => {
     console.log(`Servidor en ejecución en http://localhost:${PORT}`);
 });

@@ -18,7 +18,7 @@ export class MetaverseController {
   public grabCoin(req: Request, res: Response): void {
     const coinId = req.params.id;
     this.metaverseService.removeCoin(coinId);
-    // Implementar lógica para informar a todos los clientes sobre la moneda agarrada
+   
     res.sendStatus(204);
   }
 
