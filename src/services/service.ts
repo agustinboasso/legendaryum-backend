@@ -35,7 +35,7 @@ export class MetaverseService {
 
     for (let i = 0; i < count; i++) {
       const coin: Coin = {
-        id: `${room}-coin-${i + 1}`,  
+        id: `${room}-coin-${i + 1}`,
         x: getRandomCoordinate(area.xmin, area.xmax),
         y: getRandomCoordinate(area.ymin, area.ymax),
         z: getRandomCoordinate(area.zmin, area.zmax),
@@ -43,10 +43,9 @@ export class MetaverseService {
         available: true,
         ttl: 3600000,
       };
-  
+
       this.redisClient.sadd(`coins:${room}`, coin.id, (err, result) => {
         if (result === 1) {
-          
           this.redisClient.expire(`coins:${room}`, coin.ttl);
         }
       });
@@ -69,7 +68,7 @@ export class MetaverseService {
         z: getRandomCoordinate(area.zmin, area.zmax),
         room: room,
         available: true,
-        ttl: 3600000, 
+        ttl: 3600000,
       };
       roomCoins.push(coin);
     }
