@@ -2,6 +2,9 @@ import { Coin } from "../models/Coin";
 import { Redis } from "ioredis";
 
 export class MetaverseService {
+  removeDisconnectedUser(id: string) {
+    throw new Error("Method not implemented.");
+  }
   private coinsByRoom: Record<string, Coin[]> = {};
 
   constructor(private redisClient: Redis) {

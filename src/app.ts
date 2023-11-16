@@ -67,21 +67,25 @@ app.use(
   }),
 );
 
-io.on("connection", (socket) => {
-  socket.on("joinRoom", (room) => {
+
+
+io.on('connection', (socket) => {
+  const socketId = socket.id;
+  const userRooms = new Map();
+
+  socket.on('joinRoom', (room) => {
+    userRooms.set(socketId, room);
     socket.join(room);
 
     if (!rooms[room]) {
       rooms[room] = { peopleCount: 0 };
     }
-
     rooms[room].peopleCount++;
-
-    io.to(room).emit("peopleInRoom", rooms[room].peopleCount);
-
+    io.to(room).emit('peopleInRoom', rooms[room].peopleCount);
     const coins = metaverseService.getCoinsInRoom(room);
     io.to(room).emit("coinsInRoom", coins);
   });
+
 
   socket.on("grabCoin", async (coinId) => {
     const room = Object.keys(socket.rooms)[1];
@@ -99,18 +103,19 @@ io.on("connection", (socket) => {
     io.to(room).emit("coinsInRoom", updatedCoins);
   });
 
-  socket.on("disconnect", () => {
-    const room = Object.keys(socket.rooms)[1];
-    if (rooms[room]) {
+  socket.on('disconnecting', () => {
+    const room = userRooms.get(socketId);
+    if (room && rooms[room]) {
       rooms[room].peopleCount--;
-
-      io.to(room).emit("peopleInRoom", rooms[room].peopleCount);
-
       if (rooms[room].peopleCount === 0) {
         delete rooms[room];
+      } else {
+        io.to(room).emit('peopleInRoom', rooms[room].peopleCount);
       }
     }
+    userRooms.delete(socketId);
   });
+  
 });
 
 app.use("/api", apiRoutes(metaverseService));
