@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node src/app.js",
+    "start": "node src/app.ts",
     "build": "tsc",
-    "dev": "nodemon src/app.js ",
+    "dev": "nodemon src/app.ts ",
     "format": "prettier --write \"**/*.+(js|jsx|json|yml|yaml|css|less|scss|md|ts)\""
   },
   "keywords": [],
