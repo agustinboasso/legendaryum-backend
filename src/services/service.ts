@@ -44,7 +44,12 @@ export class MetaverseService {
         ttl: 3600000,
       };
   
-      this.redisClient.setex(`coin:${coin.id}`, coin.ttl, coin.id);
+      this.redisClient.sadd(`coins:${room}`, coin.id, (err, result) => {
+        if (result === 1) {
+          
+          this.redisClient.expire(`coins:${room}`, coin.ttl);
+        }
+      });
       coins.push(coin);
     }
 
