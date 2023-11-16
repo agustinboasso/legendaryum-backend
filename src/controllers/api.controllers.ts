@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { MetaverseService } from '../services/service';
+import { Request, Response } from "express";
+import { MetaverseService } from "../services/service";
 
 export class ApiController {
   private metaverseService: MetaverseService;

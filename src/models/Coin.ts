@@ -1,4 +1,4 @@
-import { Room } from './Rooms';
+import { Room } from "./Rooms";
 
 export interface Coin {
   id: string;

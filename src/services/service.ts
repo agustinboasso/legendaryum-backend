@@ -1,12 +1,26 @@
-import { Coin } from '../models/Coin';
+import { Coin } from "../models/Coin";
 
 export class MetaverseService {
   private coinsByRoom: Record<string, Coin[]> = {};
 
   constructor() {
     // Genera las monedas y habitaciones al iniciar la aplicación
-    this.generateCoins('sala1', 10, { xmin: 0, xmax: 100, ymin: 0, ymax: 100, zmin: 0, zmax: 100 });
-    this.generateCoins('sala2', 5, { xmin: 0, xmax: 50, ymin: 0, ymax: 50, zmin: 0, zmax: 50 });
+    this.generateCoins("sala1", 10, {
+      xmin: 0,
+      xmax: 100,
+      ymin: 0,
+      ymax: 100,
+      zmin: 0,
+      zmax: 100,
+    });
+    this.generateCoins("sala2", 5, {
+      xmin: 0,
+      xmax: 50,
+      ymin: 0,
+      ymax: 50,
+      zmin: 0,
+      zmax: 50,
+    });
     // ... otras llamadas a generateCoins para otras habitaciones
   }
 
@@ -15,10 +29,10 @@ export class MetaverseService {
     if (!this.coinsByRoom[room]) {
       this.coinsByRoom[room] = this.generateRoom(room, area);
     }
-  
+
     // Lógica para generar las monedas en la habitación
     const coins: Coin[] = [];
-  
+
     for (let i = 0; i < count; i++) {
       const coin: Coin = {
         id: `coin-${i + 1}`,
@@ -31,10 +45,10 @@ export class MetaverseService {
       };
       coins.push(coin);
     }
-  
+
     // Agrega las monedas a la habitación
     this.coinsByRoom[room] = [...this.coinsByRoom[room], ...coins];
-  
+
     return coins;
   }
 
@@ -68,18 +82,34 @@ export class MetaverseService {
 
   public removeCoin(id: string): void {
     for (const room in this.coinsByRoom) {
-      this.coinsByRoom[room] = this.coinsByRoom[room].filter((coin) => coin.id !== id);
+      this.coinsByRoom[room] = this.coinsByRoom[room].filter(
+        (coin) => coin.id !== id,
+      );
     }
   }
 
   public startCoinGenerationTimer(): void {
-    
-    setInterval(() => {
-      
-      this.generateCoins('sala1', 10, { xmin: 0, xmax: 100, ymin: 0, ymax: 100, zmin: 0, zmax: 100 });
-      this.generateCoins('sala2', 5, { xmin: 0, xmax: 50, ymin: 0, ymax: 50, zmin: 0, zmax: 50 });
-     
-    }, 60 * 60 * 1000); 
+    setInterval(
+      () => {
+        this.generateCoins("sala1", 10, {
+          xmin: 0,
+          xmax: 100,
+          ymin: 0,
+          ymax: 100,
+          zmin: 0,
+          zmax: 100,
+        });
+        this.generateCoins("sala2", 5, {
+          xmin: 0,
+          xmax: 50,
+          ymin: 0,
+          ymax: 50,
+          zmin: 0,
+          zmax: 50,
+        });
+      },
+      60 * 60 * 1000,
+    );
   }
 }
 

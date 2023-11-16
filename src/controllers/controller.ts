@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { MetaverseService } from '../services/service';
-import { Room } from '../models/Rooms';
+import { Request, Response } from "express";
+import { MetaverseService } from "../services/service";
+import { Room } from "../models/Rooms";
 
 export class MetaverseController {
   private metaverseService: MetaverseService;
@@ -18,7 +18,7 @@ export class MetaverseController {
   public grabCoin(req: Request, res: Response): void {
     const coinId = req.params.id;
     this.metaverseService.removeCoin(coinId);
-   
+
     res.sendStatus(204);
   }
 
