@@ -1,10 +1,10 @@
 import { Coin } from "../models/Coin";
+import { Redis } from "ioredis";
 
 export class MetaverseService {
   private coinsByRoom: Record<string, Coin[]> = {};
 
-  constructor() {
-    // Genera las monedas y habitaciones al iniciar la aplicación
+  constructor(private redisClient: Redis) {
     this.generateCoins("sala1", 10, {
       xmin: 0,
       xmax: 100,
@@ -21,16 +21,13 @@ export class MetaverseService {
       zmin: 0,
       zmax: 50,
     });
-    // ... otras llamadas a generateCoins para otras habitaciones
   }
 
   public generateCoins(room: string, count: number, area: any): Coin[] {
-    // Si la habitación no existe, créala
     if (!this.coinsByRoom[room]) {
       this.coinsByRoom[room] = this.generateRoom(room, area);
     }
 
-    // Lógica para generar las monedas en la habitación
     const coins: Coin[] = [];
 
     for (let i = 0; i < count; i++) {
@@ -41,19 +38,19 @@ export class MetaverseService {
         z: getRandomCoordinate(area.zmin, area.zmax),
         room: room,
         available: true,
-        ttl: 3600000, // 1 hora en milisegundos
+        ttl: 3600000,
       };
+
+      this.redisClient.setex(`coin:${coin.id}`, coin.ttl, coin.id);
       coins.push(coin);
     }
 
-    // Agrega las monedas a la habitación
     this.coinsByRoom[room] = [...this.coinsByRoom[room], ...coins];
 
     return coins;
   }
 
   private generateRoom(room: string, area: any): Coin[] {
-    // Lógica para generar la habitación
     const roomCoins: Coin[] = [];
 
     for (let i = 0; i < 5; i++) {
@@ -86,30 +83,6 @@ export class MetaverseService {
         (coin) => coin.id !== id,
       );
     }
-  }
-
-  public startCoinGenerationTimer(): void {
-    setInterval(
-      () => {
-        this.generateCoins("sala1", 10, {
-          xmin: 0,
-          xmax: 100,
-          ymin: 0,
-          ymax: 100,
-          zmin: 0,
-          zmax: 100,
-        });
-        this.generateCoins("sala2", 5, {
-          xmin: 0,
-          xmax: 50,
-          ymin: 0,
-          ymax: 50,
-          zmin: 0,
-          zmax: 50,
-        });
-      },
-      60 * 60 * 1000,
-    );
   }
 }
 

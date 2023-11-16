@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import { MetaverseService } from "./services/service";
 import { apiRoutes } from "./routes/apiRoutes";
 import cors from "cors";
+import { Redis } from "ioredis";
 
 const app = express();
 const server = http.createServer(app);
@@ -20,9 +21,41 @@ interface RoomData {
   peopleCount: number;
 }
 
+export const redisClient: Redis = new Redis({
+  host: process.env.REDIS_HOST || "127.0.0.1",
+  port: Number(process.env.REDIS_PORT) || 6379,
+  maxRetriesPerRequest: 3,
+  retryStrategy: (times) => {
+    const delay = Math.min(times * 50, 2000);
+    return delay;
+  },
+});
+
 const rooms: Record<string, RoomData> = {};
-const metaverseService = new MetaverseService();
-metaverseService.startCoinGenerationTimer();
+const metaverseService = new MetaverseService(redisClient);
+
+redisClient.on("error", (err) => console.error("Redis Client Error", err));
+
+redisClient.config("SET", "notify-keyspace-events", "Ex");
+
+redisClient
+  .duplicate()
+  .psubscribe("__keyevent@*__:expired", (channel, message) => {
+    console.log("Expired key:", message);
+    const room = "sala1";
+
+    const regeneratedCoins = metaverseService.generateCoins(room, 10, {
+      xmin: 0,
+      xmax: 100,
+      ymin: 0,
+      ymax: 100,
+      zmin: 0,
+      zmax: 100,
+    });
+
+    io.to(room).emit("coinsInRoom", regeneratedCoins);
+    io.to(room).emit("regenerateCoins", { room });
+  });
 
 const PORT = process.env.PORT || 3000;
 
