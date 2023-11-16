@@ -36,18 +36,14 @@ app.use(cors({
 io.on('connection', (socket) => {
   socket.on('joinRoom', (room) => {
     socket.join(room);
-
-    if (!rooms[room]) {
-      rooms[room] = { peopleCount: 0 };
-    }
-
-    rooms[room].peopleCount++;
-
-    
-    io.to(room).emit('peopleInRoom', rooms[room].peopleCount);
-
     const coins = metaverseService.getCoinsInRoom(room);
-    io.to(socket.id).emit('coinsInRoom', coins);
+    io.to(room).emit('coinsInRoom', coins);
+  });
+
+  socket.on('grabCoin', (coinId) => {
+    metaverseService.removeCoin(coinId);
+    io.to(socket.id).emit('coinGrabbed', coinId);
+    io.to(Object.keys(socket.rooms)[1]).emit('coinGrabbed', coinId);
   });
 
   socket.on('grabCoin', (coinId) => {
