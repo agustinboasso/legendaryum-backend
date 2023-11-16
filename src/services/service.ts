@@ -73,13 +73,13 @@ export class MetaverseService {
   }
 
   public startCoinGenerationTimer(): void {
-    // Llama a generateCoins cada hora
+    
     setInterval(() => {
-      // Llama a generateCoins para cada habitación
+      
       this.generateCoins('sala1', 10, { xmin: 0, xmax: 100, ymin: 0, ymax: 100, zmin: 0, zmax: 100 });
       this.generateCoins('sala2', 5, { xmin: 0, xmax: 50, ymin: 0, ymax: 50, zmin: 0, zmax: 50 });
-      // ... otras llamadas a generateCoins para otras habitaciones
-    }, 60 * 60 * 1000); // Cada hora
+     
+    }, 60 * 60 * 1000); 
   }
 }
 

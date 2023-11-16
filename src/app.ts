@@ -20,8 +20,7 @@ interface RoomData {
   peopleCount: number;
 }
 
-const rooms: Record<string, RoomData> = {}; // Utiliza Record<string, RoomData> para especificar el tipo
-
+const rooms: Record<string, RoomData> = {}; 
 const metaverseService = new MetaverseService();
 metaverseService.startCoinGenerationTimer();
 
@@ -42,46 +41,50 @@ io.on('connection', (socket) => {
     }
 
     rooms[room].peopleCount++;
-
     
     io.to(room).emit('peopleInRoom', rooms[room].peopleCount);
 
     const coins = metaverseService.getCoinsInRoom(room);
-    io.to(socket.id).emit('coinsInRoom', coins);
+    io.to(room).emit('coinsInRoom', coins);
   });
 
-  socket.on('grabCoin', (coinId) => {
+  socket.on('grabCoin', async (coinId) => {
+    const room = Object.keys(socket.rooms)[1]; 
+
+    
     metaverseService.removeCoin(coinId);
-    io.to(socket.id).emit('coinGrabbed', coinId);
-    socket.broadcast.to(socket.rooms.values().next().value).emit('coinGrabbed', coinId);
+
+   
+    const updatedCoins = metaverseService.getCoinsInRoom(room);
+    io.to(room).emit('coinsInRoom', updatedCoins);
   });
 
+  socket.on('coinGrabbed', async ({ room, coinId }) => {
+    
+    metaverseService.removeCoin(coinId);
+
+   
+    const updatedCoins = metaverseService.getCoinsInRoom(room);
+    io.to(room).emit('coinsInRoom', updatedCoins);
+  });
 
   socket.on('disconnect', () => {
-    const room = socket.rooms.values().next().value;
+    const room = Object.keys(socket.rooms)[1]; 
     if (rooms[room]) {
       rooms[room].peopleCount--;
 
-    
       io.to(room).emit('peopleInRoom', rooms[room].peopleCount);
 
       if (rooms[room].peopleCount === 0) {
-        
         delete rooms[room];
       }
     }
   });
 });
 
+
 app.use('/api', apiRoutes(metaverseService));
 
 server.listen(PORT, () => {
   console.log(`Servidor en ejecución en http://localhost:${PORT}`);
 });
-
-
-
-
-
-
-
