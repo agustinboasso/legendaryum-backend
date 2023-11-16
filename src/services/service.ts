@@ -32,7 +32,7 @@ export class MetaverseService {
 
     for (let i = 0; i < count; i++) {
       const coin: Coin = {
-        id: `coin-${i + 1}`,
+        id: `${room}-coin-${i + 1}`,  
         x: getRandomCoordinate(area.xmin, area.xmax),
         y: getRandomCoordinate(area.ymin, area.ymax),
         z: getRandomCoordinate(area.zmin, area.zmax),
@@ -40,7 +40,7 @@ export class MetaverseService {
         available: true,
         ttl: 3600000,
       };
-
+  
       this.redisClient.setex(`coin:${coin.id}`, coin.ttl, coin.id);
       coins.push(coin);
     }
