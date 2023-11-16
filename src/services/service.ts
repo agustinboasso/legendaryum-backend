@@ -61,7 +61,7 @@ export class MetaverseService {
         z: getRandomCoordinate(area.zmin, area.zmax),
         room: room,
         available: true,
-        ttl: 3600000, // 1 hora en milisegundos
+        ttl: 3600000, 
       };
       roomCoins.push(coin);
     }
