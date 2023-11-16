@@ -6,6 +6,8 @@ export class MetaverseService {
   redis: any;
 
   constructor() {
+    
+    this.redis = redisClient;
 
     this.generateCoins('sala1', 10, { xmin: 0, xmax: 100, ymin: 0, ymax: 100, zmin: 0, zmax: 100 });
     this.generateCoins('sala2', 5, { xmin: 0, xmax: 50, ymin: 0, ymax: 50, zmin: 0, zmax: 50 });
@@ -64,15 +66,15 @@ export class MetaverseService {
       redisClient.hmset(coinKey, coin);
       redisClient.expire(coinKey, coin.ttl);
     }
-    
+
     return roomCoins;
   }
 
-  public getCoinsInRoom(room: string): Promise<Coin[]> {
+  public getCoinsInRoom(room: string): Coin[] {
     return this.redis.hgetall(`coin:${room}`);
   }
 
-  public getRooms(): Promise<string[]> {
+   public getRooms(): Promise<string[]> {
     return this.redis.keys('coin:*');
   }
 
